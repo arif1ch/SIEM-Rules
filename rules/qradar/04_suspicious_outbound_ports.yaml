@@ -1,0 +1,24 @@
+﻿title: QRadar - Suspicious Outbound Traffic on Non-Standard Ports
+id: qradar-rule-004
+status: experimental
+description: Detects outbound communication to unusual ports often associated with Command and Control (C2) channels.
+references:
+  - https://attack.mitre.org/techniques/T1041/
+tags:
+  - attack.command_and_control
+  - attack.t1041
+logsource:
+  category: network
+detection:
+  selection:
+    destinationport: 
+      - 4444
+      - 1337
+      - 31337
+  condition: selection
+qradar_aql: |
+  SELECT sourceip, destinationip, destinationport, protocol, SUM(bytes_out) as total_bytes 
+  FROM flows 
+  WHERE destinationport IN (4444, 1337, 31337) 
+  GROUP BY sourceip, destinationip, destinationport, protocol 
+  ORDER BY total_bytes DESC

@@ -1,0 +1,23 @@
+﻿title: Persistence via Registry Run Keys
+id: splunk-rule-006
+status: experimental
+description: Detects modifications to Windows Registry Run and RunOnce keys used for persistence.
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  product: windows
+  service: sysmon
+detection:
+  selection:
+    EventCode: 13
+    TargetObject|contains:
+      - '\CurrentVersion\Run'
+      - '\CurrentVersion\RunOnce'
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=13 
+  (TargetObject="*\\CurrentVersion\\Run*" OR TargetObject="*\\CurrentVersion\\RunOnce*")
+  | table _time, Computer, User, TargetObject, Details

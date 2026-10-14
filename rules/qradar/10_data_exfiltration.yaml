@@ -1,0 +1,22 @@
+﻿title: QRadar - Anomalous Data Exfiltration to External Networks
+id: qradar-rule-010
+status: experimental
+description: Detects potential data exfiltration by monitoring flows for unusually large outbound data transfers to external destinations.
+references:
+  - https://attack.mitre.org/techniques/T1048/
+tags:
+  - attack.exfiltration
+  - attack.t1048
+logsource:
+  category: network_flow
+detection:
+  selection:
+    direction: 'outbound'
+  condition: sum(bytes_out) > 50000000 grouped by sourceip, destinationip
+qradar_aql: |
+  SELECT sourceip, destinationip, SUM(bytes_out) as total_exfil_bytes 
+  FROM flows 
+  WHERE destinationip NOT LIKE '10.%' AND destinationip NOT LIKE '192.168.%' AND destinationip NOT LIKE '172.16.%' 
+  GROUP BY sourceip, destinationip 
+  HAVING total_exfil_bytes > 50000000 
+  ORDER BY total_exfil_bytes DESC

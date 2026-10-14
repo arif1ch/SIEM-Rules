@@ -1,0 +1,19 @@
+﻿title: Audit Policy Modification
+id: splunk-rule-004
+status: experimental
+description: Detects changes to Windows audit policy settings, which could indicate an attempt to blind security monitoring.
+references:
+  - https://attack.mitre.org/techniques/T1562/002/
+tags:
+  - attack.defense_evasion
+  - attack.t1562.002
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventCode: 4719
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:Security EventCode=4719 
+  | table _time, Computer, SubjectUserName, Activity

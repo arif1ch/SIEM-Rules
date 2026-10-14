@@ -1,0 +1,20 @@
+﻿title: Windows Service Creation
+id: splunk-rule-010
+status: experimental
+description: Detects the creation of a new Windows service, which can be used for persistence or lateral movement.
+references:
+  - https://attack.mitre.org/techniques/T1543/003/
+tags:
+  - attack.persistence
+  - attack.privilege_escalation
+  - attack.t1543.003
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventCode: 7045
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:System EventCode=7045 
+  | table _time, Computer, ServiceName, ServiceFileName, ServiceType

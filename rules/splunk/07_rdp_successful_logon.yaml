@@ -1,0 +1,20 @@
+﻿title: Successful RDP Remote Interactive Logon
+id: splunk-rule-007
+status: experimental
+description: Detects successful remote desktop (RDP) logons (Logon Type 10) to monitor remote access.
+references:
+  - https://attack.mitre.org/techniques/T1021/001/
+tags:
+  - attack.lateral_movement
+  - attack.t1021.001
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventCode: 4624
+    LogonType: 10
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:Security EventCode=4624 LogonType=10 
+  | table _time, Computer, TargetUserName, IpAddress

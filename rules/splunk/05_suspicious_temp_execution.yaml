@@ -1,0 +1,23 @@
+﻿title: Process Execution from Suspicial Temp Directories
+id: splunk-rule-005
+status: experimental
+description: Detects process creation where the executable path resides within user temp directories.
+references:
+  - https://attack.mitre.org/techniques/T1204/002/
+tags:
+  - attack.execution
+  - attack.t1204.002
+logsource:
+  product: windows
+  service: sysmon
+detection:
+  selection:
+    EventCode: 1
+    Image|contains:
+      - '\AppData\Local\Temp\'
+      - '\Windows\Temp\'
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=1 
+  (Image="*\\AppData\\Local\\Temp\\*" OR Image="*\\Windows\\Temp\\*")
+  | table _time, Computer, User, Image, CommandLine

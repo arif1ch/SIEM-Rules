@@ -1,0 +1,20 @@
+﻿title: QRadar - Kerberoasting Activity Detection (TGS-REQ with RC4)
+id: qradar-rule-009
+status: experimental
+description: Detects potential Kerberoasting attacks by monitoring Kerberos service ticket requests (Event 4769) utilizing weak RC4 encryption.
+references:
+  - https://attack.mitre.org/techniques/T1558/003/
+tags:
+  - attack.credential_access
+  - attack.t1558.003
+logsource:
+  category: authentication
+detection:
+  selection:
+    eventid: 4769
+  condition: selection
+qradar_aql: |
+  SELECT sourceip, username, eventname, target_username 
+  FROM events 
+  WHERE eventid = 4769 AND (lowercased(payload) ILIKE '%rc4%' OR lowercased(payload) ILIKE '%0x17%') 
+  GROUP BY sourceip, username, eventname, target_username

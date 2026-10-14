@@ -1,0 +1,23 @@
+﻿title: Network Share Discovery via Net.exe
+id: splunk-rule-009
+status: experimental
+description: Detects the execution of net view or net share commands used by adversaries for reconnaissance.
+references:
+  - https://attack.mitre.org/techniques/T1135/
+tags:
+  - attack.discovery
+  - attack.t1135
+logsource:
+  product: windows
+  service: sysmon
+detection:
+  selection:
+    EventCode: 1
+    CommandLine|contains:
+      - 'net view'
+      - 'net share'
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=1 
+  (CommandLine="*net view*" OR CommandLine="*net share*")
+  | table _time, Computer, User, CommandLine

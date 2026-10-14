@@ -1,0 +1,22 @@
+﻿title: LSASS Memory Access Potential Credential Dumping
+id: splunk-rule-008
+status: experimental
+description: Detects process access attempts against lsass.exe which is indicative of credential dumping tools like Mimikatz.
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+tags:
+  - attack.credential_access
+  - attack.t1003.001
+logsource:
+  product: windows
+  service: sysmon
+detection:
+  selection:
+    EventCode: 10
+    TargetImage|endswith: '\lsass.exe'
+    GrantedAccess: '0x1010'
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=10 
+  TargetImage="*\\lsass.exe" GrantedAccess="0x1010" 
+  | table _time, Computer, SourceImage, TargetImage, GrantedAccess

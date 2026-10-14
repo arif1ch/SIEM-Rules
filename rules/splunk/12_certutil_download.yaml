@@ -1,0 +1,25 @@
+﻿title: Suspicious File Download via Certutil
+id: splunk-rule-012
+status: experimental
+description: Detects the use of certutil.exe with arguments indicating URL download of external payloads.
+references:
+  - https://attack.mitre.org/techniques/T1105/
+tags:
+  - attack.command_and_control
+  - attack.t1105
+logsource:
+  product: windows
+  service: sysmon
+detection:
+  selection:
+    EventCode: 1
+    Image|endswith: '\certutil.exe'
+    CommandLine|contains:
+      - '-urlcache'
+      - '-split'
+      - 'http'
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=1 
+  Image="*\\certutil.exe" (CommandLine="*-urlcache*" OR CommandLine="*-split*")
+  | table _time, Computer, User, CommandLine

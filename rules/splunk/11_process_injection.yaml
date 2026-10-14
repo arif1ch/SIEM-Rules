@@ -1,0 +1,20 @@
+﻿title: Process Injection via CreateRemoteThread
+id: splunk-rule-011
+status: experimental
+description: Detects process injection where one process creates a remote thread in another process using Sysmon EventCode 8.
+references:
+  - https://attack.mitre.org/techniques/T1055/
+tags:
+  - attack.defense_evasion
+  - attack.privilege_escalation
+  - attack.t1055
+logsource:
+  product: windows
+  service: sysmon
+detection:
+  selection:
+    EventCode: 8
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=8 
+  | table _time, Computer, SourceImage, TargetImage, GrantedAccess

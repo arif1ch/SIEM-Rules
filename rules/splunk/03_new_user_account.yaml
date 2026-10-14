@@ -1,0 +1,19 @@
+﻿title: Creation of Local User Account
+id: splunk-rule-003
+status: experimental
+description: Detects the creation of a new local user account which may indicate persistence establishment by an attacker.
+references:
+  - https://attack.mitre.org/techniques/T1136/001/
+tags:
+  - attack.persistence
+  - attack.t1136.001
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventCode: 4720
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:Security EventCode=4720 
+  | table _time, Computer, TargetUserName, Who_Created=CallerUserName

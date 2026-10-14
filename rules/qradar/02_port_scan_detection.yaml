@@ -1,0 +1,22 @@
+﻿title: QRadar - Network Port Scanning Activity
+id: qradar-rule-002
+status: experimental
+description: Detects reconnaissance activity where a single source IP scans multiple destination ports.
+references:
+  - https://attack.mitre.org/techniques/T1046/
+tags:
+  - attack.discovery
+  - attack.t1046
+logsource:
+  category: firewall
+detection:
+  selection:
+    action: 'Deny'
+  condition: unique destinationport > 20 grouped by sourceip
+qradar_aql: |
+  SELECT sourceip, COUNT(DISTINCT destinationport) as unique_ports 
+  FROM events 
+  WHERE lower(eventdirection) = 'outbound' OR lowercase(action) = 'blocked' 
+  GROUP BY sourceip 
+  HAVING unique_ports > 20 
+  ORDER BY unique_ports DESC

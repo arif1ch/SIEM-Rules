@@ -1,0 +1,24 @@
+﻿title: Suspicious PowerShell Execution with Hidden Window or Encoded Command
+id: splunk-rule-002
+status: experimental
+description: Detects execution of PowerShell with obfuscated flags often used by malware loaders and droppers.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection:
+    EventCode: 4104
+    ScriptBlockText|contains:
+      - '-enc'
+      - '-EncodedCommand'
+      - '-WindowStyle Hidden'
+  condition: selection
+splunk_spl: |
+  index=windows sourcetype=WinEventLog:Microsoft-Windows-PowerShell/Operational EventCode=4104 
+  (ScriptBlockText="*-enc*" OR ScriptBlockText="*-EncodedCommand*" OR ScriptBlockText="*-WindowStyle Hidden*")
+  | table _time, Computer, User, ScriptBlockText

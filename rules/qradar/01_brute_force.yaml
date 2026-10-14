@@ -1,0 +1,23 @@
+﻿title: QRadar - Brute Force Authentication Attack
+id: qradar-rule-001
+status: experimental
+description: Detects potential brute force attacks by aggregating multiple failed login events from a single source IP.
+references:
+  - https://attack.mitre.org/techniques/T1110/
+tags:
+  - attack.initial_access
+  - attack.t1110
+logsource:
+  category: authentication
+detection:
+  selection:
+    eventname: 'Failed Login'
+  timeframe: 5m
+  condition: count > 10 grouped by sourceip
+qradar_aql: |
+  SELECT sourceip, username, count(*) as failure_count 
+  FROM events 
+  WHERE RULENAME(avn) ILIKE '%Failed Login%' OR categoryname ILIKE '%Authentication Failure%' 
+  GROUP BY sourceip, username 
+  HAVING failure_count > 10 
+  ORDER BY failure_count DESC

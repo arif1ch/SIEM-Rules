@@ -1,0 +1,22 @@
+﻿title: QRadar - Suspicious High Volume DNS Queries (DNS Tunneling)
+id: qradar-rule-006
+status: experimental
+description: Detects potential DNS tunneling or C2 activity by tracking high volumes of unique DNS queries from a single source IP.
+references:
+  - https://attack.mitre.org/techniques/T1071/004/
+tags:
+  - attack.command_and_control
+  - attack.t1071.004
+logsource:
+  category: dns
+detection:
+  selection:
+    categoryname: 'DNS'
+  condition: unique query_string > 100 grouped by sourceip
+qradar_aql: |
+  SELECT sourceip, COUNT(DISTINCT query_string) as unique_queries 
+  FROM events 
+  WHERE categoryname ILIKE '%DNS%' OR lowercased(eventname) ILIKE '%dns query%' 
+  GROUP BY sourceip 
+  HAVING unique_queries > 100 
+  ORDER BY unique_queries DESC

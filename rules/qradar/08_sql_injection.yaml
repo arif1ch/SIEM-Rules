@@ -1,0 +1,23 @@
+﻿title: QRadar - Web Application Attack SQL Injection Signatures
+id: qradar-rule-008
+status: experimental
+description: Detects SQL injection patterns in web server logs or WAF alerts targeting public-facing applications.
+references:
+  - https://attack.mitre.org/techniques/T1190/
+tags:
+  - attack.initial_access
+  - attack.t1190
+logsource:
+  category: web_server
+detection:
+  selection:
+    payload|contains:
+      - 'UNION SELECT'
+      - '1=1'
+      - 'SELECT * FROM'
+  condition: selection
+qradar_aql: |
+  SELECT sourceip, destinationip, url, payload 
+  FROM events 
+  WHERE payload ILIKE '%UNION SELECT%' OR payload ILIKE '%1=1%' OR payload ILIKE '%SELECT * FROM%' 
+  GROUP BY sourceip, destinationip, url, payload
