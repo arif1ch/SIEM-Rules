@@ -1,2 +1,14 @@
-# SIEM-Rules
-Detection as Code repository: 15 Splunk SPL rules and 10 QRadar AQL rules with REST API integration
+﻿# SOC Detection-as-Code Pipeline
+
+Этот репозиторий предназначен для централизованного управления правилами обнаружения угроз (Detection Rules) для SIEM-систем **Splunk** (15 правил) и **IBM QRadar** (10 правил).
+
+## Архитектура
+1. Правила хранятся в формате YAML в соответствующих директориях.
+2. Изменения в репозитории отслеживаются через CI/CD (GitHub Actions).
+3. Синхронизация и обновление правил в SIEM происходят автоматически через защищенные REST API запросы.
+
+## Структура проекта
+- ules/splunk/ — правила и поисковые запросы (SPL) для Splunk.
+- ules/qradar/ — правила корреляции и AQL-запросы для QRadar.
+- scripts/ — Python-скрипты для взаимодействия с REST API SIEM.
+- .github/workflows/ — пайплайны автоматического деплоя.
